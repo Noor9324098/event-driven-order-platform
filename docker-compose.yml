@@ -1,0 +1,54 @@
+x-service: &service
+  restart: unless-stopped
+  depends_on:
+    rabbitmq:
+      condition: service_healthy
+  environment: &env
+    RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+    PORT: "3000"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"   # management UI (guest / guest)
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  order-service:
+    <<: *service
+    build: { context: ., dockerfile: docker/service.Dockerfile, args: { SERVICE: order-service } }
+    ports: ["3001:3000"]
+    environment: { <<: *env, DB_FILE: /data/order.db }
+    volumes: ["order-data:/data"]
+
+  inventory-service:
+    <<: *service
+    build: { context: ., dockerfile: docker/service.Dockerfile, args: { SERVICE: inventory-service } }
+    ports: ["3002:3000"]
+    environment: { <<: *env, DB_FILE: /data/inventory.db }
+    volumes: ["inventory-data:/data"]
+
+  payment-service:
+    <<: *service
+    build: { context: ., dockerfile: docker/service.Dockerfile, args: { SERVICE: payment-service } }
+    ports: ["3003:3000"]
+    environment: { <<: *env, DB_FILE: /data/payment.db }
+    volumes: ["payment-data:/data"]
+
+  notification-service:
+    <<: *service
+    build: { context: ., dockerfile: docker/service.Dockerfile, args: { SERVICE: notification-service } }
+    ports: ["3004:3000"]
+    environment: { <<: *env, DB_FILE: /data/notification.db }
+    volumes: ["notification-data:/data"]
+
+volumes:
+  order-data:
+  inventory-data:
+  payment-data:
+  notification-data:

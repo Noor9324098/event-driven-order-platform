@@ -1,0 +1,13 @@
+{
+  "name": "event-driven-order-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Four-microservice, event-driven order processing platform (choreographed saga over RabbitMQ)",
+  "type": "module",
+  "workspaces": ["libs/*", "services/*"],
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "test": "node --test --test-reporter=spec test/*.test.js"
+  },
+  "license": "MIT"
+}

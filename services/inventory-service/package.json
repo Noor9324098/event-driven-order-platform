@@ -1,0 +1,7 @@
+{
+  "name": "@shop/inventory-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": { "@shop/common": "*" }
+}
